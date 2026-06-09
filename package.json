@@ -1,0 +1,18 @@
+{
+  "name": "projeto-final-ebac-qa",
+  "version": "1.0.0",
+  "description": "Projeto Final - Profissão Engenheiro de Qualidade de Software - EBAC",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test": "cypress run",
+    "test:carrinho": "cypress run --spec \"cypress/e2e/US001_carrinho.cy.js\"",
+    "test:login": "cypress run --spec \"cypress/e2e/US002_login.cy.js\"",
+    "test:api": "cypress run --spec \"cypress/e2e/US003_cupons_api.cy.js\""
+  },
+  "devDependencies": {
+    "cypress": "^13.17.0"
+  },
+  "author": "",
+  "license": "MIT"
+}
