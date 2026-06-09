@@ -1,0 +1,16 @@
+{
+  "clienteValido": {
+    "email": "cliente_ebac@teste.com",
+    "senha": "Cliente@123"
+  },
+  "credenciaisInvalidas": {
+    "email": "naoexiste@teste.com",
+    "senha": "senhaerrada"
+  },
+  "cupomTeste": {
+    "code": "CUPOMTESTE",
+    "amount": "10.00",
+    "discount_type": "fixed_product",
+    "description": "Cupom de desconto de teste automatizado"
+  }
+}
