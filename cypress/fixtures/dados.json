@@ -1,7 +1,7 @@
 {
   "clienteValido": {
-    "email": "cliente_ebac@teste.com",
-    "senha": "Cliente@123"
+    "email": "jazz-qa@ebac.com",
+    "senha": "projetofinalEBAC"
   },
   "credenciaisInvalidas": {
     "email": "naoexiste@teste.com",
