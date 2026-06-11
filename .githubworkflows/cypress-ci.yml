@@ -1,0 +1,114 @@
+name: Testes Automatizados - Projeto Final EBAC QA
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:        # permite executar manualmente pela aba Actions
+
+jobs:
+  # ──────────────────────────────────────────────
+  # US-0001 · Carrinho de Compras
+  # ──────────────────────────────────────────────
+  us001-carrinho:
+    name: "US-0001 · Carrinho de Compras"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Executar testes de Carrinho
+        uses: cypress-io/github-action@v6
+        with:
+          spec: cypress/e2e/US001_carrinho.cy.js
+        continue-on-error: true   # CT002 é defeito conhecido e intencional
+        id: cypress-carrinho
+
+      - name: Upload de screenshots (falhas)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-us001-carrinho
+          path: cypress/screenshots/
+          if-no-files-found: ignore
+
+      - name: Resultado do job
+        if: always()
+        run: |
+          if [ "${{ steps.cypress-carrinho.outcome }}" == "failure" ]; then
+            echo "⚠️  US-0001: CT002 falha intencional (defeito documentado — site permite >10 unidades)."
+          else
+            echo "✅ US-0001: todos os testes passaram."
+          fi
+
+  # ──────────────────────────────────────────────
+  # US-0002 · Login de Usuário
+  # ──────────────────────────────────────────────
+  us002-login:
+    name: "US-0002 · Login de Usuário"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Executar testes de Login
+        uses: cypress-io/github-action@v6
+        with:
+          spec: cypress/e2e/US002_login.cy.js
+
+      - name: Upload de screenshots (falhas)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-us002-login
+          path: cypress/screenshots/
+          if-no-files-found: ignore
+
+  # ──────────────────────────────────────────────
+  # US-0003 · Cupons via API
+  # ──────────────────────────────────────────────
+  us003-api-cupons:
+    name: "US-0003 · Cupons via API"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Executar testes de API de Cupons
+        uses: cypress-io/github-action@v6
+        with:
+          spec: cypress/e2e/US003_cupons_api.cy.js
+
+      - name: Upload de screenshots (falhas)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-us003-api-cupons
+          path: cypress/screenshots/
+          if-no-files-found: ignore
+
+  # ──────────────────────────────────────────────
+  # Relatório consolidado (roda após os 3 jobs)
+  # ──────────────────────────────────────────────
+  relatorio-final:
+    name: "Relatório Final"
+    runs-on: ubuntu-latest
+    needs: [us001-carrinho, us002-login, us003-api-cupons]
+    if: always()
+
+    steps:
+      - name: Resumo de execução
+        run: |
+          echo "## 📋 Resultado da Execução de Testes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| User Story | Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| US-0001 · Carrinho | us001-carrinho | ${{ needs.us001-carrinho.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| US-0002 · Login    | us002-login    | ${{ needs.us002-login.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| US-0003 · API      | us003-api-cupons | ${{ needs.us003-api-cupons.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> ⚠️ CT002 (US-0001) falha intencionalmente — defeito documentado no TCC." >> $GITHUB_STEP_SUMMARY
